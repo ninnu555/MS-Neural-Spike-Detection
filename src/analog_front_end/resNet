@@ -1,0 +1,31 @@
+//Verilog-AMS HDL for "Project", "resNet" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module resNet (ref, gnd, out);	
+
+	inout ref, gnd; 
+	inout [0:255] out;
+
+	electrical ref, gnd;
+	electrical [0:255] out;	// morsetti intermedi
+
+	parameter integer N = 256;
+	parameter real R = 1K;
+
+
+	genvar k;
+	analog begin 
+		// definizione resistenza tra ref e primo nodo intermedio [0]
+		V(ref, out[0]) <+  R/2 * I(ref, out[0]);
+		// definizione resistenza tra gnd e ultimo nodo intermedio [255]
+		V(out[255], gnd) <+  R/2 * I(out[255], gnd);
+		// definizione di tutti gli altri nodi intermedi k
+		for (k = 0; k < N-1; k = k + 1) begin
+			V(out[k], out[k+1]) <+ R * I(out[k], out[k+1]);
+				end
+				
+	end
+
+endmodule
